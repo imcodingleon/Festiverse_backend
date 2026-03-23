@@ -31,7 +31,7 @@ class PerformanceRepository(PerformanceRepositoryPort):
         if eddate:
             stmt = stmt.where(PerformanceModel.prfpdfrom <= eddate)
         if genre:
-            stmt = stmt.where(PerformanceModel.genrenm == genre)
+            stmt = stmt.where(PerformanceModel.genrenm.contains(genre))
         if region:
             stmt = stmt.where(PerformanceModel.area.contains(region))
         if keyword:

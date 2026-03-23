@@ -46,6 +46,35 @@ async def seed_notion_details() -> SyncResponse:
     return SyncResponse(synced_count=count)
 
 
+# PF_ 레코드 장르 수정 (KOPIS '대중음악'을 실제 장르로 교정)
+GENRE_FIXES: dict[str, str] = {
+    "PF287381": "락/인디",          # 사운드 플래닛 페스티벌
+    "PF285675": "EDM",              # S2O Korea
+    "PF286584": "락/인디",          # DMZ 피스트레인
+    "PF285568": "락/인디",          # 뷰티풀 민트 라이프
+    "PF286798": "재즈",             # 제18회 서울재즈페스티벌
+    "PF282654": "락/인디",          # 더 글로우
+    "PF284703": "EDM",              # 워터밤 서울
+    "PF285771": "락/인디",          # 서울히어로락페스티벌
+}
+
+
+@router.post("/fix-genres", response_model=SyncResponse)
+async def fix_genres() -> SyncResponse:
+    """PF_ 레코드의 장르를 실제 장르로 교정 (1회성)."""
+    count = 0
+    async with async_session_factory() as session:
+        for mt20id, genre in GENRE_FIXES.items():
+            await session.execute(
+                text("UPDATE performances SET genrenm = :genre WHERE mt20id = :id"),
+                {"genre": genre, "id": mt20id},
+            )
+            count += 1
+        await session.commit()
+    logger.info("장르 교정 완료: %d건", count)
+    return SyncResponse(synced_count=count)
+
+
 # 25개 페스티벌에 해당하는 DB ID 목록
 KEEP_IDS = [
     # NOTION_ 레코드 (16개)
