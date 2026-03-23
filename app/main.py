@@ -146,6 +146,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://localhost:3200",
+        "http://localhost:4000",
         "https://festiverse-frontend.vercel.app",
     ],
     allow_credentials=True,
