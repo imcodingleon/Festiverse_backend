@@ -15,10 +15,13 @@ async def get_session() -> AsyncGenerator[AsyncSession, None]:
 
 async def init_db() -> None:
     from app.infrastructure.database.base import Base
-    # ORM 모델 import하여 메타데이터 등록
     import app.domains.performance.infrastructure.orm.performance_model  # noqa: F401
     import app.domains.performance.infrastructure.orm.venue_model  # noqa: F401
     import app.domains.ticket.infrastructure.orm.ticket_info_model  # noqa: F401
+    import app.domains.event_log.infrastructure.orm.event_log_model  # noqa: F401
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+
+    from app.domains.event_log.infrastructure.views.view_manager import create_dashboard_views
+    await create_dashboard_views(engine)

@@ -11,6 +11,8 @@ from app.domains.performance.adapter.outbound.persistence.performance_repository
 from app.domains.performance.application.usecase.seed_festivals_usecase import SeedFestivalsUseCase
 from app.domains.performance.application.usecase.sync_performances_usecase import SyncPerformancesUseCase
 from app.domains.blog.adapter.inbound.api.blog_router import router as blog_router
+from app.domains.event_log.adapter.inbound.api.dashboard_router import router as dashboard_router
+from app.domains.event_log.adapter.inbound.api.event_log_router import router as event_log_router
 from app.domains.ticket.adapter.inbound.api.ticket_router import router as ticket_router
 from app.domains.ticket.adapter.outbound.external.parsers.interpark_parser import InterparkParser
 from app.domains.ticket.adapter.outbound.external.parsers.melon_parser import MelonParser
@@ -24,6 +26,7 @@ from app.domains.ticket.adapter.outbound.persistence.performance_link_query impo
 from app.domains.ticket.adapter.outbound.persistence.ticket_repository import TicketRepository
 from app.domains.ticket.application.usecase.sync_tickets_usecase import SyncTicketsUseCase
 from app.domains.ticket.domain.service.performance_matcher import PerformanceMatcher
+from app.domains.performance.adapter.inbound.api.dev_router import router as dev_router
 from app.infrastructure.config.settings import settings
 from app.infrastructure.database.session import async_session_factory, init_db
 from app.infrastructure.external.http_client import close_http_client, get_http_client
@@ -148,3 +151,6 @@ app.add_middleware(
 app.include_router(performance_router)
 app.include_router(ticket_router)
 app.include_router(blog_router)
+app.include_router(event_log_router)
+app.include_router(dashboard_router)
+app.include_router(dev_router)

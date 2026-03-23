@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     SEARCH_DELAY_SECONDS: float = 3.0
     NAVER_CLIENT_ID: str = ""
     NAVER_CLIENT_SECRET: str = ""
+    TEST_DATABASE_URL: str = ""
 
     model_config = {"env_file": ".env", "env_file_encoding": "utf-8"}
 
