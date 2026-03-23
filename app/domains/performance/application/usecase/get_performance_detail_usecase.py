@@ -32,14 +32,17 @@ class GetPerformanceDetailUseCase:
         performance = await self._performance_repo.find_by_id(mt20id)
 
         # DB 캐시 miss이거나 24시간 경과시 KOPIS API 호출
+        # NOTION_ 접두사 레코드는 KOPIS에 없으므로 API 호출 스킵
         now = datetime.utcnow()
         need_fetch = False
-        if performance is None or performance.updated_at is None:
-            need_fetch = True
-        else:
-            updated = performance.updated_at.replace(tzinfo=None)
-            if (now - updated) > CACHE_TTL:
+        is_notion = mt20id.startswith("NOTION_")
+        if not is_notion:
+            if performance is None or performance.updated_at is None:
                 need_fetch = True
+            else:
+                updated = performance.updated_at.replace(tzinfo=None)
+                if (now - updated) > CACHE_TTL:
+                    need_fetch = True
 
         if need_fetch:
             fetched = await self._kopis_api.fetch_performance_detail(mt20id)

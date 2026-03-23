@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 from app.domains.performance.adapter.outbound.external.kopis_api_adapter import KopisApiAdapter
 from app.domains.performance.adapter.outbound.persistence.performance_repository import PerformanceRepository
+from app.domains.performance.application.usecase.seed_notion_details_usecase import SeedNotionDetailsUseCase
 from app.domains.performance.application.usecase.sync_performances_usecase import SyncPerformancesUseCase
 from app.infrastructure.config.settings import settings
 from app.infrastructure.database.session import async_session_factory
@@ -29,4 +30,15 @@ async def sync_performances() -> SyncResponse:
         usecase = SyncPerformancesUseCase(repo, kopis_api)
         count = await usecase.execute()
     logger.info("수동 동기화 완료: %d건", count)
+    return SyncResponse(synced_count=count)
+
+
+@router.post("/seed-notion", response_model=SyncResponse)
+async def seed_notion_details() -> SyncResponse:
+    """노션 페스티벌 상세 정보를 NOTION_ 레코드에 시드한다 (1회성)."""
+    async with async_session_factory() as session:
+        repo = PerformanceRepository(session)
+        usecase = SeedNotionDetailsUseCase(repo)
+        count = await usecase.execute()
+    logger.info("노션 시드 완료: %d건", count)
     return SyncResponse(synced_count=count)
