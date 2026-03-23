@@ -61,6 +61,9 @@ class PerformanceRepository(PerformanceRepositoryPort):
 
     async def save_many(self, performances: list[Performance]) -> None:
         for p in performances:
+            existing = await self._session.get(PerformanceModel, p.mt20id)
+            if existing and existing.mt20id.startswith("NOTION_"):
+                continue
             model = PerformanceMapper.to_model(p)
             await self._session.merge(model)
         await self._session.commit()
