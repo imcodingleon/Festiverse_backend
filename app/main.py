@@ -126,10 +126,11 @@ async def lifespan(app: FastAPI):
     # 시드는 수동 실행 (run_seed_festivals) — 서버 시작 시 자동 실행하지 않음
     # 초기 배치 수집도 스케줄러에 맡김
 
-    scheduler.add_job(run_batch_sync, "cron", hour=settings.BATCH_HOUR, id="batch_sync")
-    scheduler.add_job(run_ticket_sync, "cron", hour=settings.TICKET_BATCH_HOUR, id="ticket_sync")
-    scheduler.start()
-    logger.info("스케줄러 시작 (배치: %02d:00, 티켓: %02d:00)", settings.BATCH_HOUR, settings.TICKET_BATCH_HOUR)
+    # TODO: 데이터 재입력 완료 후 스케줄러 다시 활성화
+    # scheduler.add_job(run_batch_sync, "cron", hour=settings.BATCH_HOUR, id="batch_sync")
+    # scheduler.add_job(run_ticket_sync, "cron", hour=settings.TICKET_BATCH_HOUR, id="ticket_sync")
+    # scheduler.start()
+    logger.info("스케줄러 일시정지 상태 (수동 데이터 재입력 중)")
 
     yield
 
