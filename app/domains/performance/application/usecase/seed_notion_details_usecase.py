@@ -226,6 +226,17 @@ NOTION_FESTIVALS: list[dict] = [
     },
 ]
 
+# 새로 추가된 NOTION_ 레코드용 포스터 URL
+POSTER_URLS: dict[str, str] = {
+    "NOTION_015": "https://ticketimage.interpark.com/Play/image/large/26/26000869_p.gif",
+    "NOTION_016": "https://tkfile.yes24.com/upload2/PerfBlog/202602/20260211/20260211-57153_1.jpg",
+    "NOTION_017": "https://img1.newsis.com/2026/03/15/NISI20260315_0002083914_web.jpg",
+    "NOTION_018": "https://tkfile.yes24.com/upload2/PerfBlog/202601/20260108/20260108-56040.jpg",
+    "NOTION_019": "https://www.cbmfestival.com/theme/cbmfestival/img/ticket-poster.jpeg",
+    "NOTION_020": "https://image.edaily.co.kr/images/Photo/files/NP/S/2026/01/PS26012100442.jpg",
+    "NOTION_021": "https://image.toast.com/aaaaab/ticketlink/TKL_6/WB26_Busan_main_0227.jpg",
+}
+
 
 class SeedNotionDetailsUseCase:
 
@@ -237,7 +248,7 @@ class SeedNotionDetailsUseCase:
         count = 0
         for data in NOTION_FESTIVALS:
             existing = await self._performance_repo.find_by_id(data["mt20id"])
-            poster = existing.poster if existing else ""
+            poster = existing.poster if existing and existing.poster else POSTER_URLS.get(data["mt20id"], "")
             perf = Performance(
                 mt20id=data["mt20id"],
                 prfnm=data["prfnm"],
