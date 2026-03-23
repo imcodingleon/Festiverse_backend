@@ -100,6 +100,22 @@ NOTION_FESTIVALS: list[dict] = [
         "festival": "Y",
         "relates": [{"name": "워터밤", "url": "https://www.waterbombfestival.com/ticket-busan"}],
     },
+    {
+        "mt20id": "NOTION_022",
+        "prfnm": "THE AIR HOUSE",
+        "prfpdfrom": "2026.05.23",
+        "prfpdto": "2026.05.25",
+        "fcltynm": "남이섬",
+        "pcseguidance": "토-일 140,000원, 일-월 120,000원, 토-월 170,000원",
+        "genrenm": "복합",
+        "prfstate": "공연예정",
+        "area": "강원특별자치도",
+        "festival": "Y",
+        "relates": [
+            {"name": "공식사이트", "url": "https://www.the-airhouse.com/"},
+            {"name": "KREAM", "url": "https://kream.co.kr/exhibitions/theairhouse2026"},
+        ],
+    },
     # --- 기존 NOTION_ 레코드 상세 업데이트 ---
     {
         "mt20id": "NOTION_001",
@@ -235,6 +251,7 @@ POSTER_URLS: dict[str, str] = {
     "NOTION_019": "https://www.cbmfestival.com/theme/cbmfestival/img/ticket-poster.jpeg",
     "NOTION_020": "https://image.edaily.co.kr/images/Photo/files/NP/S/2026/01/PS26012100442.jpg",
     "NOTION_021": "https://image.toast.com/aaaaab/ticketlink/TKL_6/WB26_Busan_main_0227.jpg",
+    "NOTION_022": "https://trommelmusic.com/wp-content/uploads/2024/05/Screenshot-2024-05-01-at-21.15.31.png",
 }
 
 

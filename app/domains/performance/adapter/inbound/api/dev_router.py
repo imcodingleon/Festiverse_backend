@@ -3,6 +3,8 @@ import logging
 from fastapi import APIRouter
 from pydantic import BaseModel
 
+from sqlalchemy import text
+
 from app.domains.performance.adapter.outbound.external.kopis_api_adapter import KopisApiAdapter
 from app.domains.performance.adapter.outbound.persistence.performance_repository import PerformanceRepository
 from app.domains.performance.application.usecase.seed_notion_details_usecase import SeedNotionDetailsUseCase
@@ -42,3 +44,58 @@ async def seed_notion_details() -> SyncResponse:
         count = await usecase.execute()
     logger.info("노션 시드 완료: %d건", count)
     return SyncResponse(synced_count=count)
+
+
+# 25개 페스티벌에 해당하는 DB ID 목록
+KEEP_IDS = [
+    # NOTION_ 레코드 (16개)
+    "NOTION_001",  # 서울 파크 뮤직 페스티벌
+    "NOTION_002",  # 아시안 팝 페스티벌 2026
+    "NOTION_004",  # PEAK FESTIVAL 2026
+    "NOTION_005",  # HIPHOPPLAYA FESTIVAL 2026
+    "NOTION_006",  # 2026 WORLD DJ FESTIVAL
+    "NOTION_009",  # 부산국제록페스티벌 2026
+    "NOTION_010",  # 인천펜타포트락페스티벌 2026
+    "NOTION_012",  # 2026 EDC KOREA
+    "NOTION_014",  # RAPBEAT 2026
+    "NOTION_015",  # 그린캠프 페스티벌
+    "NOTION_016",  # KT&G 상상실현 페스티벌
+    "NOTION_017",  # 2026 통영프린지 페스티벌
+    "NOTION_018",  # LOUD BRIDGE FESTIVAL 2026
+    "NOTION_019",  # 2026 체리블라썸뮤직페스티벌
+    "NOTION_020",  # 2026 LOVESOME(러브썸)
+    "NOTION_021",  # 워터밤 부산 2026
+    "NOTION_022",  # THE AIR HOUSE
+    # KOPIS PF_ 레코드 (8개) — NOTION_ 없는 페스티벌
+    "PF282654",    # 더 글로우 (THE GLOW)
+    "PF284703",    # 워터밤 [서울]
+    "PF285568",    # 뷰티풀 민트 라이프
+    "PF285675",    # S2O Korea
+    "PF285771",    # 서울히어로락페스티벌
+    "PF286584",    # DMZ 피스트레인 뮤직 페스티벌
+    "PF286798",    # 제18회 서울재즈페스티벌
+    "PF287381",    # 사운드 플래닛 페스티벌
+]
+
+
+class CleanupResponse(BaseModel):
+    kept: int
+    deleted: int
+
+
+@router.post("/cleanup-festivals", response_model=CleanupResponse)
+async def cleanup_festivals() -> CleanupResponse:
+    """25개 페스티벌만 남기고 나머지 삭제 (1회성)."""
+    placeholders = ", ".join([f":id{i}" for i in range(len(KEEP_IDS))])
+    params = {f"id{i}": kid for i, kid in enumerate(KEEP_IDS)}
+
+    async with async_session_factory() as session:
+        result = await session.execute(
+            text(f"DELETE FROM performances WHERE mt20id NOT IN ({placeholders})"),
+            params,
+        )
+        deleted = result.rowcount
+        await session.commit()
+
+    logger.info("페스티벌 정리 완료: %d건 삭제, %d건 유지", deleted, len(KEEP_IDS))
+    return CleanupResponse(kept=len(KEEP_IDS), deleted=deleted)
