@@ -11,5 +11,6 @@ class PerformanceSummaryResponse(BaseModel):
     genrenm: str
     prfstate: str
     area: str
+    dtguidance: str = ""
 
     model_config = {"from_attributes": True}

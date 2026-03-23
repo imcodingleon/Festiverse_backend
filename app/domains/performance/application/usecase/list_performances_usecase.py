@@ -30,6 +30,7 @@ class ListPerformancesUseCase:
                 genrenm=p.genrenm,
                 prfstate=p.prfstate,
                 area=p.area,
+                dtguidance=p.dtguidance,
             )
             for p in performances
         ]

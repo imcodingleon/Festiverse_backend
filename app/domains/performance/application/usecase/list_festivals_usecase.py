@@ -29,6 +29,7 @@ class ListFestivalsUseCase:
                 genrenm=p.genrenm,
                 prfstate=p.prfstate,
                 area=p.area,
+                dtguidance=p.dtguidance,
                 festival=p.festival,
             )
             for p in performances
