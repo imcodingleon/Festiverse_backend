@@ -46,6 +46,7 @@ NOTION_FESTIVALS: list[dict] = [
         "prfstate": "공연중",
         "area": "경상남도",
         "festival": "Y",
+        "dtguidance": "2026.03.20~2026.03.22,2026.03.27~2026.03.29,2026.04.03~2026.04.04",
         "relates": [],
     },
     {
@@ -278,6 +279,7 @@ class SeedNotionDetailsUseCase:
                 area=data.get("area", ""),
                 festival=data.get("festival", "Y"),
                 relates=data.get("relates", []),
+                dtguidance=data.get("dtguidance", ""),
                 poster=poster,
                 updated_at=now,
             )
