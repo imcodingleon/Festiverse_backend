@@ -2,6 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
+    ENV: str = "production"
     KOPIS_API_KEY: str = ""
     KOPIS_BASE_URL: str = "http://www.kopis.or.kr/openApi/restful"
     DATABASE_URL: str = "sqlite+aiosqlite:///./festiverse.db"

@@ -159,4 +159,5 @@ app.include_router(ticket_router)
 app.include_router(blog_router)
 app.include_router(event_log_router)
 app.include_router(dashboard_router)
-app.include_router(dev_router)
+if settings.ENV != "production":
+    app.include_router(dev_router)
