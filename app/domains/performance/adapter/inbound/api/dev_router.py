@@ -12,6 +12,13 @@ from app.domains.performance.adapter.outbound.external.kopis_api_adapter import 
 from app.domains.performance.adapter.outbound.persistence.performance_repository import PerformanceRepository
 from app.domains.performance.application.usecase.seed_notion_details_usecase import SeedNotionDetailsUseCase
 from app.domains.performance.application.usecase.sync_performances_usecase import SyncPerformancesUseCase
+from app.domains.ticket.adapter.outbound.external.parsers.interpark_parser import InterparkParser
+from app.domains.ticket.adapter.outbound.external.parsers.melon_parser import MelonParser
+from app.domains.ticket.adapter.outbound.external.parsers.ticketlink_parser import TicketlinkParser
+from app.domains.ticket.adapter.outbound.external.ticket_crawl_adapter import TicketCrawlAdapter
+from app.domains.ticket.adapter.outbound.persistence.performance_link_query import PerformanceLinkQuery
+from app.domains.ticket.adapter.outbound.persistence.ticket_repository import TicketRepository
+from app.domains.ticket.application.usecase.sync_tickets_usecase import SyncTicketsUseCase
 from app.infrastructure.config.settings import settings
 from app.infrastructure.database.session import async_session_factory
 from app.infrastructure.external.http_client import get_http_client
@@ -60,6 +67,25 @@ GENRE_FIXES: dict[str, str] = {
     "PF284703": "EDM",              # 워터밤 서울
     "PF285771": "락/인디",          # 서울히어로락페스티벌
 }
+
+
+@router.post("/sync-tickets", response_model=SyncResponse)
+async def sync_tickets() -> SyncResponse:
+    """티켓 크롤링 Phase 1(relates 기반)만 1회 실행한다 (개발용)."""
+    client = await get_http_client()
+    parsers = [MelonParser(), TicketlinkParser(), InterparkParser()]
+    crawl_adapter = TicketCrawlAdapter(client, parsers)
+
+    async with async_session_factory() as session:
+        ticket_repo = TicketRepository(session)
+        link_query = PerformanceLinkQuery(session)
+        usecase = SyncTicketsUseCase(
+            ticket_repo, crawl_adapter, link_query,
+            crawl_delay=settings.CRAWL_DELAY_SECONDS,
+        )
+        count = await usecase.execute()
+    logger.info("티켓 크롤링 완료: %d건", count)
+    return SyncResponse(synced_count=count)
 
 
 @router.post("/fix-genres", response_model=SyncResponse)
